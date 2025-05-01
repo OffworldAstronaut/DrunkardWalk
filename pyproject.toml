@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "DrunkardWalk"
+version = "0.1.0"
+description = "A study module dedicated to the one-dimensional classical walk, commonly known as the Drunkard Walk."
+authors = [{ name = "Rafael Amorim", email = "rafael.science.amorim@gmail.com" }]
+readme = "README.md"
+license = { file = "LICENSE" }
+dependencies = ["numpy", "matplotlib"]  # Replace with actual dependencies
+
+[project.urls]
+"Homepage" = "https://github.com/OffworldAstronaut/DrunkardWalk"
