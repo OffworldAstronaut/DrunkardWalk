@@ -1,29 +1,30 @@
 from random import random
 import numpy as np
 from matplotlib import pyplot as plt
+from typing import List
+from time import time
 
 
 class Drunkard:
-    def __init__(self, pos : int, coin_p : float) -> None:
+    def __init__(self, coin_p : float) -> None:
         """Creates a new "drunkard" (walker) with some parameters
 
         Args:
-            pos (int): his position in the number line
             coin_p (float): his probability of walking to the right
         """
-        self.pos = pos 
+        self.pos = 0
         self.coin_p = coin_p
         
     def walk(self) -> None:
         """Flip a coin and moves the Drunkard
         """
         if random() <= self.coin_p:
-            self.pos += 1 
+            self.set_pos(self.pos + 1)
             
         else: 
-            self.pos -= 1
+            self.set_pos(self.pos - 1)
             
-        self.get_pos()
+        return self.get_pos()
         
     # Getters and Setters 
     
@@ -40,13 +41,32 @@ class Drunkard:
         return self.coin_p
     
 class Sidewalk:
-    def __init__(self, size: int, coin_p : float=0.50, start_pos: int=0):
-        self.drunkard = Drunkard(start_pos, coin_p)
+    def __init__(self, size: int, coin_p : float=0.50):
+        self.drunkard = Drunkard(coin_p)
         self.size = size
         self.wandering_pos = []
     
-    def wander(self, end_step : int=1_000):
-        for i in range (0, end_step):
+    def get_size(self) -> int:
+        return self.size
+    
+    def wander(self, end_step: int=1_000) -> List[int]:
+        for _ in range (0, end_step):
             self.wandering_pos.append(self.drunkard.walk())
             
         return self.wandering_pos
+
+    def make_dispersion_plot(self) -> None:
+        ...
+        
+    def make_average_pos_plot(self) -> None:
+        ...
+
+    def make_wandering_plot(self) -> None:
+        plt.title(f"Random Walk (p={self.drunkard.get_coin_p()}; size={self.get_size()})")
+        plt.xlabel("Time (Step)")
+        plt.ylabel("Position")
+        
+        plt.plot(self.wandering_pos)
+        plt.savefig(f"""RandomWalk_{time()}
+                    _p={self.drunkard.get_coin_p()}
+                    _size={self.get_size()}.png""")
