@@ -1,7 +1,13 @@
-import DrunkardWalk as DW
+import DrunkardWalk as DW 
 
-walker1 = DW.Sidewalk(100, 0.5)
+quantity_sidewalks = 10_000
+size_sidewalks = 100
+coin_p = 0.5 
+max_steps = 1_000
 
-wandering = walker1.wander()
+city = DW.City(quantity_sidewalks, size_sidewalks, coin_p)
 
-walker1.make_plot()
+city.roam(max_steps)
+
+city.make_avg_graph()
+city.make_std_graph()
