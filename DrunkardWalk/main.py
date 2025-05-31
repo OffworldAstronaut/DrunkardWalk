@@ -1,36 +1,41 @@
-from random import random                # For the drunkard coin toss
-from time import time                    # For file R&W operations
-import numpy as np                       # For general calculations
-from matplotlib import pyplot as plt     # For plotting
-from typing import List           # Typing hints
-
+from time import time                       # For file R&W operations
+import numpy as np                          # General numerical necessities
+from matplotlib import pyplot as plt        # For plotting
+from typing import List                     # Typing hints
 
 class Drunkard:
     def __init__(self, coin_p: float) -> None:
-        """Creates a new drunkard (walker) with the given probability of stepping right.
+        """Creates a new drunkard (walker) with a given probability of stepping right.
 
         Args:
-            coin_p (float): Probability of walking to the right.
+            coin_p (float): Probability of walking one step to the right.
         """
+        # Position of the walker
         self.pos = 0
+        # Probability of walking one step to the right
         self.coin_p = coin_p
 
     def walk(self) -> int:
-        """Flip a coin and move the drunkard."""
-        if random() <= self.coin_p:
+        """Flips a coin and moves the drunkard one step."""
+    
+        if np.random.uniform() <= self.coin_p:
             self.set_pos(self.pos + 1)
-        else:
+            
+        else: 
             self.set_pos(self.pos - 1)
+            
         return self.get_pos()
 
     # Getters and Setters
 
+    # Position 
     def set_pos(self, new_pos: int) -> None:
         self.pos = new_pos
 
     def get_pos(self) -> int:
         return self.pos
 
+    # Coin
     def set_coin_p(self, new_coin_p: float) -> None:
         self.coin_p = new_coin_p
 
@@ -39,113 +44,170 @@ class Drunkard:
 
 
 class Sidewalk:
-    """Main class where all the single-walker simulations occur."""
+    """Environment of a single drunkard -- can be interpreted as the original number line."""
 
     def __init__(self, size: int, coin_p: float = 0.50) -> None:
         """Creates a sidewalk (number line) for the drunkard to walk on.
 
         Args:
             size (int): Length of the sidewalk.
-            coin_p (float, optional): Coin probability of stepping right. Defaults to 0.50.
+            coin_p (float, optional): Coin probability of stepping right. Defaults to 0.50 (fair coin).
         """
+        # Each sidewalk automatically has a drunkard attached to it
         self.drunkard = Drunkard(coin_p)
         self.size = size
+        # Stores each position of the drunkard over time
         self.wandering_pos = []
-        self.wandering_std = []
-
-    def get_size(self) -> int:
-        return self.size
 
     def wander(self, end_step: int = 1_000) -> List[int]:
         """Simulate the drunkard's walk over a number of steps."""
+        
+        # Walks the drunkard for as many steps as specified in the method call
         for _ in range(end_step):
+            # Each step is recorded in the "wandering_pos" attribute
             self.wandering_pos.append(self.drunkard.walk())
+            
+        # The positions traveled by the walker are returned for statistical analysis
         return self.wandering_pos
 
-    def make_volatilty_plot(self) -> None:
-        """Plots the pseudo-dispersion of a single walker's path."""
-        plt.title(f"Random Walk STD (p={self.drunkard.get_coin_p()}; size={self.get_size()})")
-        plt.xlabel("Time (Step)")
-        plt.ylabel("STD")
-
-        plt.plot(self.wandering_std)
-
-        plt.savefig(
-            f"RandomWalkVolatility_{time()}_"
-            f"p={self.drunkard.get_coin_p()}_"
-            f"size={self.get_size()}.png"
-        )
-        plt.close()
-
-    def make_average_pos_plot(self) -> None:
-        # TODO: This method will plot the average position of the single walker in this sidewalk
-        ...
-
     def make_wandering_plot(self) -> None:
-        """Plots the path of the walker over time."""
+        """Plots the path of the walker over time (position in function of step)."""
+        
+        # Plot title -- automatically varies with the coin chosen and the size of the sidewalk
         plt.title(f"Random Walk (p={self.drunkard.get_coin_p()}; size={self.get_size()})")
         plt.xlabel("Time (Step)")
         plt.ylabel("Position")
 
         plt.plot(self.wandering_pos)
 
+        # Saves the figure with custom filename -- varies with timestamp, coin and sidewalk size
         plt.savefig(
             f"RandomWalk_{time()}_"
             f"p={self.drunkard.get_coin_p()}_"
             f"size={self.get_size()}.png"
         )
+        # Closes the plot at hand to prevent memory inefficiency and inaccurate plotting
         plt.close()
+        
+    # Auxiliar method -- gets the sidewalk's size
+    def get_size(self) -> int:
+        return self.size
 
 
 class City:
-    """A city containing multiple sidewalks and walkers (for ensemble simulations)."""
+    """Environment for multiple sidewalks -- runs many simulations for statistical analysis."""
 
     def __init__(self, n_sidewalks: int, sidewalk_size: int, coin_p: float) -> None:
+        # Number of sidewalks in the city
         self.n_sidewalks = n_sidewalks
+        # Size of the city's sidewalks 
         self.sidewalk_size = sidewalk_size
+        # Coin probability of the sidewalks' walkers
         self.coin_p = coin_p
 
+        # DISCLAIMER: a set of sidewalks is called a "pub" (yes, like the ones in Britain); 
+        # The following lists are "lists of lists": they contain data from each sidewalk simulated in
+        # the city, or derived from them; 
+        
+        # Stores the lists of positions from each sidewalk simulated
         self.pub_positions = []
+        # Stores the average of every walker's position in a given time (ie. record every walker's position 
+        # at step 1, 2, ... and average them, then store in this list)
         self.pub_average = []
+        # Stores the dispersion (STD) of every walker in a given time -- same logic as above
         self.pub_std = []
 
     def roam(self, end_step: int = 500) -> List[List[int]]:
+        """Executes each sidewalk simulation in succession and stores the positions for 
+        statistical analysis. 
+
+        Args:
+            end_step (int, optional): The maximum number of steps that the walkers
+            are going to traverse. Defaults to 500.
+
+        Returns:
+            List[List[int]]: List containing lists of the positions of each walker over time.
+        """
+        
+        # Executes the random walk for each sidewalk specified in the City's initialization
         for _ in range(self.n_sidewalks):
-            walker = Sidewalk(self.sidewalk_size, self.coin_p)
-            self.pub_positions.append(walker.wander(end_step))
+            # Creates a new sidewalk with a given size and coin probability
+            sidewalk = Sidewalk(self.sidewalk_size, self.coin_p)
+            # Executes the random walk for as many steps as needed
+            positions = sidewalk.wander(end_step)
+            # Stores the generated array
+            self.pub_positions.append(positions)
+            
+        # Returns the list of lists
         return self.pub_positions
 
     def calc_pub_avg(self) -> List[float] | None:
-        if not any(self.pub_positions):
-            return None
+        """Calculates and returns the average position over time across all sidewalks.
 
-        self.pub_positions = np.array(self.pub_positions, dtype=float)
-        self.pub_average = []
-
-        for i in range(self.pub_positions.shape[1]):
-            self.pub_average.append(np.average(self.pub_positions[:, i]))
-
-        return self.pub_average
-
-    def calc_pub_std(self) -> List[float] | None:
+        Returns:
+            List[float] | None: List of average positions over time
+        """
+        
+        # Prevents user shenanigans: trying to calc average of nothing
         if not all(isinstance(row, (list, np.ndarray)) for row in self.pub_positions):
             return None
 
+        # Transforms the pub_positions array into a numpy one (a matrix if you will) 
+        # for ease of manipulation
         self.pub_positions = np.array(self.pub_positions, dtype=float)
+        # Empties the pub_average array to prevent computational error if the method
+        # has been run previously
+        self.pub_average = []
+
+        # Traverses each column to calculate its average -- each column of the matrix
+        # is a given step: the ith column is the ith step.
+        for step in range(self.pub_positions.shape[1]):
+            # Selects the desired column from the matrix
+            column = self.pub_positions[:, step]
+            # Calculates its average and stores in the array
+            self.pub_average.append(np.average(column))
+
+        # Returns the list of averages
+        return self.pub_average
+
+    def calc_pub_std(self) -> List[float] | None:
+        """Calculates and returns the dispersion (STD) over time across all sidewalks.
+
+        Returns:
+            List[float] | None: List of dispersions over time
+        """
+        
+        # Prevents user shenanigans: trying to calc STD of nothing
+        if not all(isinstance(row, (list, np.ndarray)) for row in self.pub_positions):
+            return None
+
+        # Transforms the pub_positions array into a numpy one (a matrix if you will) 
+        # for ease of manipulation
+        self.pub_positions = np.array(self.pub_positions, dtype=float)
+        # Empties the pub_std array to prevent computational error if the method
+        # has been run previously
         self.pub_std = []
 
-        for i in range(self.pub_positions.shape[1]):
-            self.pub_std.append(np.std(self.pub_positions[:, i]))
+        # Traverses each column to calculate its dispersion -- each column of the matrix
+        # is a given step: the ith column is the ith step.
+        for step in range(self.pub_positions.shape[1]):
+            self.pub_std.append(np.std(self.pub_positions[:, step]))
 
+        # Returns the list of dispersions
         return self.pub_std
 
     def make_avg_graph(self) -> None:
+        """Plots the averages over time of the random walks. 
+        """
+        # Title -- Changes automatically with the number of sidewalks
         plt.title(f"Average Position in Time for {self.n_sidewalks} Drunkards")
         plt.xlabel("Time (Steps)")
         plt.ylabel("Average Position")
-
+        
         plt.plot(self.calc_pub_avg())
-
+        
+        # Saves the plot -- filename automatically configured for timestamp, coin, number of
+        # sidewalks and their size
         plt.savefig(
             f"AvgPos_{time()}_"
             f"nsw={self.n_sidewalks}_"
@@ -155,16 +217,23 @@ class City:
         plt.close()
 
     def make_std_graph(self) -> None:
+        """Plots the dispersion over time of the random walks.
+        """
+        # Title -- Changes automatically with the number of sidewalks
         plt.title(f"Dispersion for {self.n_sidewalks} Drunkards")
         plt.xlabel("Time (Steps)")
         plt.ylabel("Dispersion / Standard Deviation")
 
         plt.plot(self.calc_pub_std())
 
+        # Saves the plot -- filename automatically configured for timestamp, coin, number of
+        # sidewalks and their size
         plt.savefig(
             f"Disp_{time()}_"
             f"nsw={self.n_sidewalks}_"
             f"sws={self.sidewalk_size}_"
             f"p={self.coin_p}.png"
         )
+        
+        # Closes the plot to prevent memory accumulation and plotting over the same plot
         plt.close()
