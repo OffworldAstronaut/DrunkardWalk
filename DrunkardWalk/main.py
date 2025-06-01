@@ -111,6 +111,8 @@ class City:
         
         # Stores the lists of positions from each sidewalk simulated
         self.pub_positions = []
+        # Stores the end positions from each sidewalk simulated
+        self.pub_end_positions = []
         # Stores the average of every walker's position in a given time (ie. record every walker's position 
         # at step 1, 2, ... and average them, then store in this list)
         self.pub_average = []
@@ -135,6 +137,8 @@ class City:
             sidewalk = Sidewalk(self.sidewalk_size, self.coin_p)
             # Executes the random walk for as many steps as needed
             positions = sidewalk.wander(end_step)
+            # Slices the last position and stores it
+            self.pub_end_positions.append(positions[-1])
             # Stores the generated array
             self.pub_positions.append(positions)
             
@@ -237,3 +241,31 @@ class City:
         
         # Closes the plot to prevent memory accumulation and plotting over the same plot
         plt.close()
+        
+    def make_endpos_graph(self) -> None:
+        """Plots the end positions of every random walk simulated; 
+        """
+        
+        # Title -- changes automatically with the number of sidewalks
+        
+        plt.title(f"Final positions for {self.n_sidewalks} Drunkards")
+        plt.xlabel("Final position")
+        plt.ylabel("Times")
+        
+        # Implementation of Sturge's rule for optimal number of bins
+        # Adapted from the code published by Max Markov on Medium (Oct. 11, 2022)
+        width = 1.0 + np.log2(len(self.pub_end_positions))
+    
+        nbins = np.ceil((np.max(self.pub_end_positions) - np.min(self.pub_end_positions)) / width)
+        nbins = int(np.max([1, nbins]))
+        
+        plt.hist(self.pub_end_positions, bins=nbins)
+
+        # Saves the plot -- filename automatically configured for timestamp, coin, number of
+        # sidewalks and their size
+        plt.savefig(
+            f"Endpos_{time()}_"
+            f"nsw={self.n_sidewalks}_"
+            f"sws={self.sidewalk_size}_"
+            f"p={self.coin_p}.png"
+        )    

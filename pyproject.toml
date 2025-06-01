@@ -9,7 +9,7 @@ description = "A study module dedicated to the one-dimensional classical walk, c
 authors = [{ name = "Rafael Amorim", email = "rafael.science.amorim@gmail.com" }]
 readme = "README.md"
 license = { file = "LICENSE" }
-dependencies = ["numpy", "matplotlib"]  # Replace with actual dependencies
+dependencies = ["numpy", "matplotlib"]
 
 [project.urls]
 "Homepage" = "https://github.com/OffworldAstronaut/DrunkardWalk"
