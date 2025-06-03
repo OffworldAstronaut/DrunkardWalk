@@ -208,15 +208,31 @@ class City:
         plt.xlabel("Time (Steps)")
         plt.ylabel("Average Position")
         
-        plt.plot(self.calc_pub_avg())
+        # Calculates and stores the average over time 
+        pubavg = self.calc_pub_avg()
+        
+        # Writes the data to a file for posterior storage 
+        with open(f"""AvgPos
+                  _{time()}
+                  _nsw={self.n_sidewalks}
+                  _sws={self.sidewalk_size}
+                  _p={self.coin_p}.dat""", "w") as f:
+            
+            for i in range(len(pubavg)):
+                f.write(f"{i+1} {pubavg[i]:.4f}\n")
+                
+            f.close()
+        
+        # Plots the data in a matplotlib plot
+        plt.plot(pubavg)
         
         # Saves the plot -- filename automatically configured for timestamp, coin, number of
         # sidewalks and their size
         plt.savefig(
-            f"AvgPos_{time()}_"
-            f"nsw={self.n_sidewalks}_"
-            f"sws={self.sidewalk_size}_"
-            f"p={self.coin_p}.png"
+            f"""AvgPos_{time()}_
+            nsw={self.n_sidewalks}_
+            sws={self.sidewalk_size}_
+            p={self.coin_p}.png"""
         )
         plt.close()
 
