@@ -218,10 +218,8 @@ class City:
                   f"_sws={self.sidewalk_size}"
                   f"_p={self.coin_p}.dat""", "w") as f:
             
-            for i in range(len(pubavg)):
-                f.write(f"{i+1} {pubavg[i]:.4f}\n")
-                
-            f.close()
+            for i, val in enumerate(pubavg, start=1):
+                f.write(f"{i} {val:.4f}\n")
         
         # Plots the data in a matplotlib plot
         plt.plot(pubavg)
@@ -237,47 +235,55 @@ class City:
         plt.close()
 
     def make_std_graph(self) -> None:
-        """Plots the dispersion over time of the random walks.
-        """
-        # Title -- Changes automatically with the number of sidewalks
-        plt.title(f"Dispersion for {self.n_sidewalks} Drunkards")
-        plt.xlabel("Time (Steps)")
-        plt.ylabel("Dispersion / Standard Deviation")
-
-        # Calculates and store the dispersion over time 
+        """Plots the dispersion over time of the random walks."""
+        
+        # Calculates and stores the dispersion over time 
         pubstd = self.calc_pub_std()
 
         # Writes the data to a file for posterior storage 
-        with open(f"Disp_{time()}"
-                  f"_nsw={self.n_sidewalks}"
-                  f"_sws={self.sidewalk_size}"
-                  f"_p={self.coin_p}.dat", "w") as f:
+        with open(
+            f"Disp_{time()}_"
+            f"nsw={self.n_sidewalks}_"
+            f"sws={self.sidewalk_size}_"
+            f"p={self.coin_p}.dat", "w") as f:
             
-            for i in range(len(pubstd)):
-                f.write(f"{i+1} {pubstd[i]:.4f}\n")
-                
-            f.close()
+            for i, val in enumerate(pubstd, start=1):
+                f.write(f"{i} {val:.4f}\n")
 
-        # Plots the data 
-        plt.plot(pubstd)
+        # Prepare data for plotting
+        xpoints = np.arange(len(pubstd))
+        sqrt_t = np.sqrt(xpoints)
 
-        # Saves the plot -- filename automatically configured for timestamp, coin, number of
-        # sidewalks and their size
+        fig, ax = plt.subplots()
+        
+        # Title and labels
+        ax.set_title(f"Dispersion for {self.n_sidewalks} Drunkards")
+        ax.set_xlabel("Time (Steps)")
+        ax.set_ylabel("Dispersion")
+
+        # Plots
+        ax.plot(pubstd, label="Dispersion / STD")
+        ax.plot(sqrt_t, label=r"$\sqrt{t}$", linestyle='--')
+
+        # Add legend
+        ax.legend(loc='upper right')
+
+        # Saves the plot
         plt.savefig(
             f"Disp_{time()}_"
             f"nsw={self.n_sidewalks}_"
             f"sws={self.sidewalk_size}_"
             f"p={self.coin_p}.png"
         )
-        
-        # Closes the plot to prevent memory accumulation and plotting over the same plot
+
         plt.close()
+
         
-    def make_endpos_graph(self, sturges: bool=True, nbins=50) -> None:
+    def make_endpos_graph(self, sturges: bool=True, nbins: int=50) -> None:
         """Plots the end positions of every random walk simulated.
 
         Args:
-            sturges (bool): If True, uses Sturges' Law for the histogram bin count.
+            sturges (bool): If True, uses Sturges' Law for the histogram bin count. Defaults to True
             nbins (int, optional): Number of bins to use if not using Sturges' Law. Defaults to 50.
         """
 
