@@ -8,10 +8,9 @@ This is a study repository for the classical, one-dimensional *random walk*, com
 - Run multiple simulations (walkers) in parallel to analyze ensemble behavior;
 - Calculate and plot:
   - The path of a single walker;
-  - The average position of a single walk;
-  - The standard deviation (dispersion) of a single walk;
   - The average position across multiple walkers;
-  - The standard deviation across multiple walkers.
+  - The standard deviation across multiple walkers;
+  - The final positions of multiple walkers (histogram).
 
 ---
 
@@ -20,7 +19,7 @@ This is a study repository for the classical, one-dimensional *random walk*, com
 ### Classes
 
 - `Drunkard`: Represents a walker who moves left or right based on a coin flip.
-- `Sidewalk`: Environment for a single walker. Contains logic for walking and plotting.
+- `Sidewalk`: Environment for a single walker.
 - `City`: Simulates many walkers on their own sidewalks. Serves as basis for calculating ensemble statistics.
 
 ---
@@ -28,9 +27,9 @@ This is a study repository for the classical, one-dimensional *random walk*, com
 ## 📈 Example Outputs
 
 The simulation generates `.png` graphs such as:
-- `RandomWalkVolatility_...png`: Standard deviation of a single walk.
-- `AvgPos_...png`: Average position of multiple walkers over time.
-- `Disp_...png`: Dispersion (standard deviation) of positions among all walkers.
+- `AvgPos_...png`: Average position of multiple walkers over time;
+- `Disp_...png`: Dispersion (standard deviation) of positions among all walkers;
+- `EndPos_...png`: Histogram of ending positions of multiple walkers.
 
 ---
 
@@ -60,14 +59,26 @@ pip install .
 sidewalk = Sidewalk(size=100, coin_p=0.5)
 sidewalk.wander(end_step=1000)
 sidewalk.make_wandering_plot()
-sidewalk.make_volatilty_plot()
 ```
 
 ### 2. Run a Multi-Walker Simulation
 
 ```python
-city = City(n_sidewalks=100, sidewalk_size=100, coin_p=0.5)
-city.roam(end_step=500)
+
+# This code is on example.py
+
+import DrunkardWalk as DW 
+
+quantity_sidewalks = 10_000
+size_sidewalks = 100
+coin_p = 0.5 
+max_steps = 1_000
+
+city = DW.City(quantity_sidewalks, size_sidewalks, coin_p)
+
+city.roam(max_steps)
+
 city.make_avg_graph()
 city.make_std_graph()
+city.make_endpos_graph(sturges=False, nbins=50)
 ```

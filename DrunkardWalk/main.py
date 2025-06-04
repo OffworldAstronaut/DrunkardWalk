@@ -277,7 +277,6 @@ class City:
         )
 
         plt.close()
-
         
     def make_endpos_graph(self, sturges: bool=True, nbins: int=50) -> None:
         """Plots the end positions of every random walk simulated.
