@@ -2,6 +2,7 @@ from time import time                       # For file R&W operations
 import numpy as np                          # General numerical necessities
 from matplotlib import pyplot as plt        # For plotting
 from typing import List                     # Typing hints
+from scipy.stats import norm
 
 class Drunkard:
     def __init__(self, coin_p: float) -> None:
@@ -212,11 +213,10 @@ class City:
         pubavg = self.calc_pub_avg()
         
         # Writes the data to a file for posterior storage 
-        with open(f"""AvgPos
-                  _{time()}
-                  _nsw={self.n_sidewalks}
-                  _sws={self.sidewalk_size}
-                  _p={self.coin_p}.dat""", "w") as f:
+        with open(f"AvgPos_{time()}"
+                  f"_nsw={self.n_sidewalks}"
+                  f"_sws={self.sidewalk_size}"
+                  f"_p={self.coin_p}.dat""", "w") as f:
             
             for i in range(len(pubavg)):
                 f.write(f"{i+1} {pubavg[i]:.4f}\n")
@@ -244,7 +244,22 @@ class City:
         plt.xlabel("Time (Steps)")
         plt.ylabel("Dispersion / Standard Deviation")
 
-        plt.plot(self.calc_pub_std())
+        # Calculates and store the dispersion over time 
+        pubstd = self.calc_pub_std()
+
+        # Writes the data to a file for posterior storage 
+        with open(f"Disp_{time()}"
+                  f"_nsw={self.n_sidewalks}"
+                  f"_sws={self.sidewalk_size}"
+                  f"_p={self.coin_p}.dat", "w") as f:
+            
+            for i in range(len(pubstd)):
+                f.write(f"{i+1} {pubstd[i]:.4f}\n")
+                
+            f.close()
+
+        # Plots the data 
+        plt.plot(pubstd)
 
         # Saves the plot -- filename automatically configured for timestamp, coin, number of
         # sidewalks and their size
@@ -258,30 +273,43 @@ class City:
         # Closes the plot to prevent memory accumulation and plotting over the same plot
         plt.close()
         
-    def make_endpos_graph(self) -> None:
-        """Plots the end positions of every random walk simulated; 
-        """
-        
-        # Title -- changes automatically with the number of sidewalks
-        
-        plt.title(f"Final positions for {self.n_sidewalks} Drunkards")
-        plt.xlabel("Final position")
-        plt.ylabel("Times")
-        
-        # Implementation of Sturge's rule for optimal number of bins
-        # Adapted from the code published by Max Markov on Medium (Oct. 11, 2022)
-        width = 1.0 + np.log2(len(self.pub_end_positions))
-    
-        nbins = np.ceil((np.max(self.pub_end_positions) - np.min(self.pub_end_positions)) / width)
-        nbins = int(np.max([1, nbins]))
-        
-        plt.hist(self.pub_end_positions, bins=nbins)
+    def make_endpos_graph(self, sturges: bool=True, nbins=50) -> None:
+        """Plots the end positions of every random walk simulated.
 
-        # Saves the plot -- filename automatically configured for timestamp, coin, number of
-        # sidewalks and their size
+        Args:
+            sturges (bool): If True, uses Sturges' Law for the histogram bin count.
+            nbins (int, optional): Number of bins to use if not using Sturges' Law. Defaults to 50.
+        """
+
+        # Fits a gaussian curve to the positions
+        mu, sigma = norm.fit(self.pub_end_positions)
+
+        # Title changes automatically with the number of sidewalks
+        plt.title(f"Final positions for {self.n_sidewalks} Drunkards")
+        plt.suptitle(f"Mu: {mu:.4f}, Sigma: {sigma:.4f}")
+        plt.xlabel("Final position")
+        plt.ylabel("Frequency")
+        
+        if sturges:
+            # Using Sturges' rule: bins = 1 + log2(n)
+            nbins = int(np.ceil(1 + np.log2(len(self.pub_end_positions))))
+
+        # Plots the histogram
+        count, bins, _ = plt.hist(self.pub_end_positions, bins=nbins, density=True, alpha=0.6, color='b')
+
+        # Plots the gaussian fit
+        x = np.linspace(min(bins), max(bins), 1000)
+        y = norm.pdf(x, mu, sigma)
+        plt.plot(x, y, 'r--', linewidth=2)
+
+        # Save plot
         plt.savefig(
-            f"Endpos_{time()}_"
+            f"Endpos_{time():.0f}_"
             f"nsw={self.n_sidewalks}_"
             f"sws={self.sidewalk_size}_"
+            f"sigma={sigma}"
             f"p={self.coin_p}.png"
-        )    
+        )
+
+        plt.close()
+        
