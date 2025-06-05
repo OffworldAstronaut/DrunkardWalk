@@ -8,6 +8,6 @@ city = DW.City(quantity_sidewalks, size_sidewalks, coin_p)
 
 city.roam()
 
-#city.make_avg_graph()
+city.make_avg_graph()
 city.make_std_graph()
-#city.make_endpos_graph(sturges=False, nbins=50)
+city.make_endpos_graph(sturges=False, nbins=50)
