@@ -262,7 +262,7 @@ class City:
         ax.set_ylabel("Dispersion")
 
         # Plots
-        ax.plot(pubstd, label="Dispersion / STD")
+        ax.plot(pubstd, label="Dispersion")
         ax.plot(sqrt_t, label=r"$\sqrt{t}$", linestyle='--')
 
         # Add legend

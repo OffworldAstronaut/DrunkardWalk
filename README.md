@@ -1,6 +1,6 @@
 # 🍺 DrunkardWalk
 
-This is a study repository for the classical, one-dimensional *random walk*, commonly known as the *drunkard's walk*. It's structured following OOP orientations and python module formatting. 
+This is a study repository for the classical, one-dimensional **random walk**, commonly known as the **drunkard's walk**. It's structured following OOP orientations and python module formatting. 
 
 ## Features
 
@@ -82,3 +82,17 @@ city.make_avg_graph()
 city.make_std_graph()
 city.make_endpos_graph(sturges=False, nbins=50)
 ```
+
+### Plot Examples 
+
+**Final positions histogram**
+
+![Final positions histogram](examples/imgs/ex_endpos.png)
+
+**Average positions plot**
+
+![Average positions](examples/imgs/ex_avgpos.png)
+
+**Dispersion plot**
+
+![Dispersion histogram](examples/imgs/ex_std.png)
