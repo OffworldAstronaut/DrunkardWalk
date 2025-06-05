@@ -2,7 +2,7 @@ from time import time                       # For file R&W operations
 import numpy as np                          # General numerical necessities
 from matplotlib import pyplot as plt        # For plotting
 from typing import List                     # Typing hints
-from scipy.stats import norm
+from scipy.stats import norm                # Normalization library 
 
 class Drunkard:
     def __init__(self, coin_p: float) -> None:
@@ -120,17 +120,16 @@ class City:
         # Stores the dispersion (STD) of every walker in a given time -- same logic as above
         self.pub_std = []
 
-    def roam(self, end_step: int = 500) -> List[List[int]]:
+    def roam(self) -> List[List[int]]:
         """Executes each sidewalk simulation in succession and stores the positions for 
         statistical analysis. 
-
-        Args:
-            end_step (int, optional): The maximum number of steps that the walkers
-            are going to traverse. Defaults to 500.
 
         Returns:
             List[List[int]]: List containing lists of the positions of each walker over time.
         """
+        
+        # Defines the maximum steps in function of the size of the sidewalks
+        end_step = int(self.sidewalk_size / 2.0) + 1
         
         # Executes the random walk for each sidewalk specified in the City's initialization
         for _ in range(self.n_sidewalks):
