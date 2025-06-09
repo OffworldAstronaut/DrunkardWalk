@@ -200,7 +200,7 @@ class City:
         # Returns the list of dispersions
         return self.pub_std
 
-    def make_avg_graph(self) -> None:
+    def make_avg_graph(self, plot_only: bool=False) -> None:
         """Plots the averages over time of the random walks. 
         """
         # Title -- Changes automatically with the number of sidewalks
@@ -211,14 +211,15 @@ class City:
         # Calculates and stores the average over time 
         pubavg = self.calc_pub_avg()
         
-        # Writes the data to a file for posterior storage 
-        with open(f"AvgPos_{time()}"
-                  f"_nsw={self.n_sidewalks}"
-                  f"_sws={self.sidewalk_size}"
-                  f"_p={self.coin_p}.dat""", "w") as f:
-            
-            for i, val in enumerate(pubavg, start=1):
-                f.write(f"{i} {val:.4f}\n")
+        if not plot_only:     
+            # Writes the data to a file for posterior storage 
+            with open(f"AvgPos_{time()}"
+                    f"_nsw={self.n_sidewalks}"
+                    f"_sws={self.sidewalk_size}"
+                    f"_p={self.coin_p}.dat""", "w") as f:
+                
+                for i, val in enumerate(pubavg, start=1):
+                    f.write(f"{i} {val:.4f}\n")
         
         # Plots the data in a matplotlib plot
         plt.plot(pubavg)
@@ -233,21 +234,22 @@ class City:
         )
         plt.close()
 
-    def make_std_graph(self, loglog: bool=False) -> None:
+    def make_std_graph(self, loglog: bool=False, plot_only: bool=False) -> None:
         """Plots the dispersion over time of the random walks."""
         
         # Calculates and stores the dispersion over time 
         pubstd = self.calc_pub_std()
 
+        if not plot_only:
         # Writes the data to a file for posterior storage 
-        with open(
-            f"Disp_{time()}_"
-            f"nsw={self.n_sidewalks}_"
-            f"sws={self.sidewalk_size}_"
-            f"p={self.coin_p}.dat", "w") as f:
-            
-            for i, val in enumerate(pubstd, start=1):
-                f.write(f"{i} {val:.4f}\n")
+            with open(
+                f"Disp_{time()}_"
+                f"nsw={self.n_sidewalks}_"
+                f"sws={self.sidewalk_size}_"
+                f"p={self.coin_p}.dat", "w") as f:
+                
+                for i, val in enumerate(pubstd, start=1):
+                    f.write(f"{i} {val:.4f}\n")
 
         # Prepare data for plotting
         xpoints = np.arange(len(pubstd))
