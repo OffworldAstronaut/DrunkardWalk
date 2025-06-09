@@ -9,7 +9,7 @@ This is a study repository for the classical, one-dimensional **random walk**, c
 - Calculate and plot:
   - The path of a single walker;
   - The average position across multiple walkers;
-  - The standard deviation across multiple walkers;
+  - The standard deviation across multiple walkers (linear and loglog plot);
   - The final positions of multiple walkers (histogram).
 
 ---
@@ -69,7 +69,7 @@ sidewalk.make_wandering_plot()
 import DrunkardWalk as DW 
 
 quantity_sidewalks = 10_000
-size_sidewalks = 100
+size_sidewalks = 1_000
 coin_p = 0.5
 
 city = DW.City(quantity_sidewalks, size_sidewalks, coin_p)
@@ -77,7 +77,7 @@ city = DW.City(quantity_sidewalks, size_sidewalks, coin_p)
 city.roam()
 
 city.make_avg_graph()
-city.make_std_graph()
+city.make_std_graph(loglog=True)
 city.make_endpos_graph(sturges=False, nbins=50)
 ```
 
@@ -93,4 +93,5 @@ city.make_endpos_graph(sturges=False, nbins=50)
 
 **Dispersion plot**
 
-![Dispersion histogram](examples/imgs/ex_std.png)
+![Dispersion plot (linear)](examples/imgs/ex_std.png)
+![Dispersion plot (loglog)](examples/imgs/ex_stdloglog.png)

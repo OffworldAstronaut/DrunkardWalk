@@ -233,7 +233,7 @@ class City:
         )
         plt.close()
 
-    def make_std_graph(self) -> None:
+    def make_std_graph(self, loglog: bool=False) -> None:
         """Plots the dispersion over time of the random walks."""
         
         # Calculates and stores the dispersion over time 
@@ -260,9 +260,12 @@ class City:
         ax.set_xlabel("Time (Steps)")
         ax.set_ylabel("Dispersion")
 
-        # Plots
-        ax.plot(pubstd, label="Dispersion")
-        ax.plot(sqrt_t, label=r"$\sqrt{t}$", linestyle='--')
+        if loglog:
+            ax.loglog(pubstd, label="Dispersion")
+            ax.loglog(sqrt_t, label=r"$\sqrt{t}$", linestyle="--")
+        else:
+            ax.plot(pubstd, label="Dispersion")
+            ax.plot(sqrt_t, label=r"$\sqrt{t}$", linestyle='--')
 
         # Add legend
         ax.legend(loc='upper right')
