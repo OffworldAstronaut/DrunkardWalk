@@ -1,4 +1,4 @@
-import DrunkardWalkSD as DWSD
+import DrunkardWalk as DW
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8,7 +8,7 @@ alpha_list = []
 quantity_sidewalks = 10_000
 size_sidewalks = 500
 
-city = DWSD.City(quantity_sidewalks, size_sidewalks)
+city = DW.City(quantity_sidewalks, size_sidewalks)
 
 for w in coin_disorders:
     city.set_coin_W(w)

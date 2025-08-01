@@ -1,10 +1,10 @@
-import DrunkardWalkSD as DWSD
+import DrunkardWalk as DW
 
 quantity_sidewalks = 10_000
 size_sidewalks = 1_500
 disorder_intensity = 1.00
 
-city = DWSD.City(quantity_sidewalks, size_sidewalks, disorder_intensity)
+city = DW.City(quantity_sidewalks, size_sidewalks, disorder_intensity)
 
 city.roam()
 
