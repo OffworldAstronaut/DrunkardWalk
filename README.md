@@ -100,4 +100,3 @@ city.make_std_graph(tail=125, plot_only=True, loglog=True)
 - Better integration between ``City`` and ``Sidewalk``: the latter should generate it's own coins;
 - Plotting improvements (specially log-log dispersion and exponent calculation); 
 - Integration of ``comparison_alpha_w.py`` as a City's special method;
-- Code re-documentation for up-to-date explanations;

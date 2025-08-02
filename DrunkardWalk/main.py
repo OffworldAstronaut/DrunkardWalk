@@ -1,22 +1,26 @@
-from time import time                       # For file R&W operations
-import numpy as np                          # General numerical necessities
-from matplotlib import pyplot as plt        # For plotting
-from matplotlib.ticker import FormatStrFormatter  # For formatting axes in plots
-from typing import List                     # Typing hints
-from scipy.stats import norm                # Normalization library
+from time import time                               # file I/O
+import numpy as np                                  # Numerical necessities 
+from scipy.stats import norm                        # Normalization library
+from matplotlib import pyplot as plt                # Plotting
+from matplotlib.ticker import FormatStrFormatter    # Plotting formatting 
+from typing import List                             # Typing hints
 
 class Drunkard: 
     def __init__(self, sidewalk_size: int) -> None:
-        """Creates a new drunkard (walker) with a given probability of stepping right.
+        """Creates a new drunkard (walker) with a given probability of stepping right; 
+        The walker is placed in the middle site of his sidewalk; 
 
         Args:
             sidewalk_size (int): Size of the sidewalk that the walker is placed.
         """
-        # Position of the walker -- the walker starts at the middle of the sidewalk
-        self.pos = int(sidewalk_size / 2.0)
+        self.pos = sidewalk_size // 2.0 
 
     def walk(self) -> int:
-        """Flips a coin and moves the drunkard one step."""
+        """Toss a coin and moves the walker one step according to the result. 
+
+        Returns:
+            int: New position of the walker
+        """
     
         if np.random.uniform() <= self.coin_p:
             self.set_pos(self.pos + 1)
@@ -26,7 +30,10 @@ class Drunkard:
             
         return self.get_pos()
     
+    # Setters and Getters
+
     # Position 
+        
     def set_pos(self, new_pos: int) -> None:
         self.pos = new_pos
 
@@ -34,6 +41,7 @@ class Drunkard:
         return self.pos
 
     # Coin
+    
     def set_coin_p(self, new_coin_p: float) -> None:
         self.coin_p = new_coin_p
 
@@ -44,13 +52,13 @@ class Sidewalk:
     """Environment of a single drunkard -- can be interpreted as the original number line."""
 
     def __init__(self, size: int, coins: List) -> None:
-        """Creates a sidewalk (number line) for the drunkard to walk on.
+        """Creates a sidewalk for a random walker to use. 
 
         Args:
-            size (int): Length of the sidewalk.
-            coin_p (float, optional): Coin probability of stepping right. Defaults to 0.50 (fair coin).
+            size (int): Size of the sidewalk
+            coins (List): List of coins for the sidewalk
         """
-        # Each sidewalk automatically has a drunkard attached to it
+        # Each sidewalk has a drunkard automatically attached to it in a relation of composition
         self.drunkard = Drunkard(size)
         # Stores the sidewalk's size 
         self.size = size
@@ -83,7 +91,7 @@ class Sidewalk:
         return self.wandering_pos
     
     def calc_avg(self) -> float:
-        """Calculates the average position of the drunkard over time.
+        """Calculates the average position of the drunkard in a given time.
 
         Returns:
             float: Average position of the drunkard.
@@ -98,7 +106,7 @@ class Sidewalk:
     
     # TODO: method to calculate the dispersion (STD) over time
     def calc_std(self) -> float:
-        """Calculates the dispersion (STD) of the drunkard's position over time.
+        """Calculates the dispersion (STD) of the drunkard's position in a given time.
 
         Returns:
             float: Dispersion (STD) of the drunkard's position.
@@ -111,7 +119,6 @@ class Sidewalk:
         # Calculates and returns the dispersion
         return np.std(self.wandering_pos)
     
-    # TODO: method to plot the average position over time
     def plot_avgpos(self) -> None:
         """Plots the average position of the drunkard over time."""
     
@@ -130,7 +137,6 @@ class Sidewalk:
         )
         plt.close()
         
-    # TODO: method to plot the dispersion (STD) over time
     def plot_stdpos(self, tail: int, loglog: bool=False) -> None:
         """Plots the dispersion (STD) of the drunkard's position over time.
 
@@ -168,7 +174,6 @@ class Sidewalk:
         
         plt.close()
     
-    # TODO: method to plot the histogram of all the positions of the drunkard
     def plot_endpos(self, sturges: bool=True, nbins: int=50) -> None:
         """Plots the end positions of the drunkard's walk.
 
